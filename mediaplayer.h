@@ -37,6 +37,8 @@ private slots:
     void on_hzVolume_valueChanged(int _value);
     void on_lTunes_doubleClicked(const QModelIndex &index);
 
+    void on_actionExit_triggered();
+
 private:
     Ui::MediaPlayer *ui;
 

@@ -29,6 +29,9 @@ MediaPlayer::MediaPlayer(QWidget *parent) :
 
 MediaPlayer::~MediaPlayer()
 {
+    delete pPlayer;
+    delete pPlayList;
+    delete pListModel;
     delete ui;
 }
 
@@ -37,11 +40,12 @@ void MediaPlayer::on_actionAdd_files_triggered()
     QFileDialog dlg;
     dlg.setFileMode(QFileDialog::ExistingFiles);
     //dlg.setNameFilter(tr("Music file (*.mp3)");
-    //dlg.setDirectory(QDir::currentPath());
     dlg.setOption(QFileDialog::ReadOnly);
     dlg.setViewMode((QFileDialog::List));
-    QList<QUrl> listFileUrl = dlg.getOpenFileUrls(this, tr("Open music file"),
-                                                  QDir::currentPath(), tr("Music (*.mp3)"));
+    QList<QUrl> listFileUrl = dlg.getOpenFileUrls(this,
+                                                  tr("Open music file"),
+                                                  QDir::currentPath(),
+                                                  tr("Music (*.mp3)"));
     if( !listFileUrl.isEmpty() ) {
         QString sError{""};
         setFilesToPlayer(listFileUrl, sError);
@@ -73,9 +77,10 @@ void MediaPlayer::on_actionSave_list_triggered()
                                        QDir::currentPath(),
                                        tr("Playlist file (*.m3u)"));
 
-    //qDebug() << "Saved filename: " << saveFileName << endl;
-    if(!saveFileName.isEmpty())
-        pPlayList->save(saveFileName,"m3u");
+    if(!saveFileName.isEmpty()) {
+        // TODO check if the file extension exist
+        pPlayList->save(saveFileName, "m3u");
+    }
 }
 
 void MediaPlayer::on_actionload_list_triggered()
@@ -91,6 +96,12 @@ void MediaPlayer::on_actionload_list_triggered()
         pPlayList->load(loadFileName, "m3u");
     }
 
+}
+
+void MediaPlayer::on_actionExit_triggered()
+{
+   pPlayer->stop();
+   qApp->exit();
 }
 
 void MediaPlayer::setFilesToPlayer(QList<QUrl> _listFiles, QString &_error)
@@ -184,7 +195,6 @@ void MediaPlayer::on_pbForward_clicked()
         pPlayList->next();
     }
     qDebug() << "Player is at: " << pPlayList->currentIndex() << endl;
-
     setTextStatusbar();
 }
 
@@ -204,5 +214,7 @@ void MediaPlayer::on_lTunes_doubleClicked(const QModelIndex &_index)
         pPlayer->play();
     setTextStatusbar();
 }
+
+
 
 
